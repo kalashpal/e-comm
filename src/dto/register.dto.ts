@@ -15,5 +15,5 @@ export class RegisterDto {
   email: string;
 
   @IsArray()
-  roles: string[]; // Assuming roles will be passed as an array of strings
+  role: string; 
 }

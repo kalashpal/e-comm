@@ -7,15 +7,18 @@ import { AuthService } from '../auth.service';
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector, private authService: AuthService) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
     if (!requiredRoles) {
-      return true;
+      return true; // No roles required, allow access
     }
+    
     const { user } = context.switchToHttp().getRequest();
-    return this.authService.matchRoles(requiredRoles, user.roles);
+    const isAllowed = await this.authService.matchRoles(requiredRoles, user.roles);
+    
+    return isAllowed;
   }
 }
